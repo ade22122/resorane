@@ -1,0 +1,174 @@
+body {
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background: #f8f9fa;
+}
+
+.layout {
+    display: flex;
+}
+
+
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 240px;
+    height: 100vh;
+    background: #343a40;
+    color: white;
+    padding: 2rem 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+    overflow-y: auto;
+}
+
+.sidebar a, .sidebar strong {
+    display: block;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    text-decoration: none;
+    color: white;
+    transition: background 0.2s ease;
+}
+
+.sidebar a:hover {
+    background: #495057;
+}
+
+.sidebar strong {
+    font-size: 1.1rem;
+    background: #212529;
+    text-align: center;
+}
+
+.content {
+    flex-grow: 1;
+    padding: 2rem;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 2rem;
+}
+
+.dish-card {
+    width: 240px;
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.3s ease;
+}
+
+.dish-card:hover {
+    transform: translateY(-6px);
+}
+
+.dish-card img {
+    width: 100%;
+    height: 160px;
+    object-fit: cover;
+}
+
+.dish-card .content {
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.dish-card .content h4 {
+    margin: 0;
+    font-size: 1.1rem;
+}
+
+.dish-card .content p {
+    margin: 0;
+    color: #6c757d;
+}
+
+.tooltip {
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+    font-size: 0.9rem;
+    color: #007bff;
+}
+.main-content {
+    margin-left: 240px;
+    padding: 2rem;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 2rem;
+}
+
+
+.tooltip .tooltiptext {
+    visibility: hidden;
+    width: 180px;
+    background-color: #343a40;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 0.5rem;
+    position: absolute;
+    z-index: 1;
+    bottom: 125%;
+    left: 50%;
+    transform: translateX(-50%);
+    opacity: 0;
+    transition: opacity 0.3s;
+    font-size: 0.85rem;
+}
+
+.tooltip:hover .tooltiptext {
+    visibility: visible;
+    opacity: 1;
+}
+
+.dish-card form button {
+    margin-top: 0.5rem;
+    padding: 0.5rem;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.dish-card form button:hover {
+    background-color: #218838;
+}
+
+@media (max-width: 600px) {
+    .layout {
+        flex-direction: column;
+    }
+
+    .sidebar {
+        width: 100%;
+        flex-direction: row;
+        justify-content: space-around;
+    }
+
+    .content {
+    margin-left: 240px; /* ← сюда перенеси */
+    padding: 2rem;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 2rem;
+    }
+
+
+
+    .dish-card {
+        width: 100%;
+        max-width: 320px;
+    }
+}

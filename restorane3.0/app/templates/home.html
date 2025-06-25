@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Главная</title>
+    <link rel="icon" href="/static/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="/static/home.css">
+</head>
+<body>
+    <div class="layout">
+        <div class="sidebar">
+            <strong>👋 {{ user }}</strong>
+            <a href="/home">🏠 Главная</a>
+            <a href="/profile">👤 Профиль</a>
+            <a href="/reserve">📅 Бронирование</a>
+            <a href="/logout">🚪 Выйти</a>
+        </div>
+
+        <div class="main-content">
+            {% for dish in dishes %}
+            <div class="dish-card">
+                <img src="/static/images/{{ dish.image or 'placeholder.jpg' }}" alt="{{ dish.name }}">
+                <div class="content">
+                    <h4>{{ dish.name }}</h4>
+                    <p><strong>{{ dish.price }} ₽</strong></p>
+                    <div class="tooltip">ℹ️ Состав
+                        <span class="tooltiptext">{{ dish.description }}</span>
+                    </div>
+                    
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</body>
+</html>

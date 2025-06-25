@@ -1,0 +1,20 @@
+[
+  {
+    "id": 1,
+    "table_number": 1,
+    "seats": 2,
+    "is_available": true
+  },
+  {
+    "id": 2,
+    "table_number": 2,
+    "seats": 4,
+    "is_available": true
+  },
+  {
+    "id": 3,
+    "table_number": 3,
+    "seats": 6,
+    "is_available": true
+  }
+]

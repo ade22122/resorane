@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Корзина</title>
+    <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
+
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <h2>Корзина</h2>
+<ul>
+  {% for item in items %}
+    <li>{{ item[0] }} — {{ item[1] }}₽</li>
+  {% endfor %}
+</ul>
+<p><strong>Итого:</strong> {{ total }}₽</p>
+    {% if items %}
+        <a href="/clear_cart">Очистить корзину</a>
+    {% else %}
+        <p>Корзина пуста</p>
+    {% endif %}
+    <a href="/home">⬅ Назад к меню</a>
+</body>
+</html>

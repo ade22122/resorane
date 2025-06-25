@@ -1,0 +1,57 @@
+body {
+    font-family: 'Segoe UI', sans-serif;
+    background-color: #f7f7f7;
+    color: #333;
+    margin: 0;
+    padding: 0;
+}
+
+.profile-container {
+    max-width: 800px;
+    margin: 50px auto;
+    padding: 30px;
+    background-color: #fff;
+    border-radius: 12px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+}
+
+.profile-title {
+    text-align: center;
+    font-size: 28px;
+    margin-bottom: 20px;
+}
+
+.profile-username {
+    text-align: center;
+    margin-bottom: 30px;
+    font-size: 18px;
+    color: #555;
+}
+
+.reservation-list {
+    list-style: none;
+    padding: 0;
+}
+
+.reservation-item {
+    padding: 15px;
+    border-bottom: 1px solid #eee;
+    font-size: 16px;
+}
+
+.reservation-item:last-child {
+    border-bottom: none;
+}
+
+.back-link {
+    display: inline-block;
+    margin-top: 20px;
+    text-decoration: none;
+    color: #5a38d6;
+    font-weight: bold;
+    transition: color 0.2s ease-in-out;
+}
+
+.back-link:hover {
+    color: #3e2ba3;
+}

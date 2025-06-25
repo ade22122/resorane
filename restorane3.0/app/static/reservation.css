@@ -1,0 +1,82 @@
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background-color: #f5f7fa;
+}
+
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 90vh;
+}
+
+.reservation-box {
+    background-color: #fff;
+    padding: 2.5rem 2rem;
+    border-radius: 16px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+    width: 100%;
+    max-width: 420px;
+}
+
+.reservation-box h2 {
+    text-align: center;
+    font-size: 1.8rem;
+    margin-bottom: 1.8rem;
+    color: #212529;
+}
+
+label {
+    display: block;
+    margin-bottom: 0.4rem;
+    font-weight: 500;
+    color: #333;
+}
+
+select,
+input[type="datetime-local"] {
+    width: 100%;
+    padding: 0.6rem 0.75rem;
+    border: 1px solid #ced4da;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+    font-size: 1rem;
+    transition: border-color 0.2s ease-in-out;
+}
+
+select:focus,
+input[type="datetime-local"]:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 0 0.15rem rgba(0, 123, 255, 0.25);
+}
+
+button[type="submit"] {
+    width: 100%;
+    padding: 0.75rem;
+    background-color: #007bff;
+    border: none;
+    color: white;
+    font-size: 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+button[type="submit"]:hover {
+    background-color: #0056b3;
+}
+
+a {
+    display: inline-block;
+    margin-top: 1rem;
+    color: #6c63ff;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+a:hover {
+    text-decoration: underline;
+}

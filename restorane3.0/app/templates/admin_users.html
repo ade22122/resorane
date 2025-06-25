@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Список пользователей</title>
+    <link rel="stylesheet" href="/static/admin.css">
+</head>
+<body>
+    <div class="admin-section">
+        <h2>👥 Пользователи</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Имя пользователя</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                <tr>
+                    <td>{{ user.id }}</td>
+                    <td>{{ user.username }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <a href="/admin">⬅ Назад</a>
+    </div>
+</body>
+</html>
