@@ -62,7 +62,7 @@ def menu_page(request: Request):
 
 @app.get("/profile", response_class=HTMLResponse)
 def profile_page(request: Request):
-    user_id = request.cookies.get("user_id")
+    user_id = request.session.get("user_id")
     if not user_id:
         return RedirectResponse("/login", status_code=303)
 
@@ -102,7 +102,7 @@ def profile_page(request: Request):
 
 @app.post("/cancel_reservation")
 def cancel_reservation(request: Request, reservation_id: int = Form(...)):
-    user_id = request.cookies.get("user_id")
+    user_id = request.session.get("user_id")
     if not user_id:
         return RedirectResponse("/login", status_code=303)
 

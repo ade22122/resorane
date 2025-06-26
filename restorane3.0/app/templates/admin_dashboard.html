@@ -358,7 +358,116 @@
                     </tbody>
                 </table>
             </div>
-            
+            <!-- Добавьте этот раздел после существующей статистики заказов -->
+<section>
+    <h2><i class="fas fa-user-tie"></i> Статистика по официантам</h2>
+    
+    <div class="card">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Официант</th>
+                    <th>Количество заказов</th>
+                    <th>Общая сумма (₽)</th>
+                    <th>Средний чек (₽)</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for waiter in waiter_stats %}
+                <tr>
+                    <td>{{ waiter.waiter_name }} (ID: {{ waiter.waiter_id }})</td>
+                    <td>{{ waiter.total_orders }}</td>
+                    <td>{{ "%.2f"|format(waiter.total_revenue) }}</td>
+                    <td>{{ "%.2f"|format(waiter.avg_order_value) }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    <div class="card">
+        <h3>График по официантам</h3>
+        <div class="chart-container">
+            <canvas id="waitersChart"></canvas>
+        </div>
+    </div>
+</section>
+
+<script>
+    // Добавьте этот скрипт после существующего скрипта для графика заказов
+    const waiterLabels = {{ waiter_stats | map(attribute='waiter_name') | list | tojson }};
+    const waiterOrders = {{ waiter_stats | map(attribute='total_orders') | list | tojson }};
+    const waiterRevenue = {{ waiter_stats | map(attribute='total_revenue') | list | tojson }};
+
+    const waiterCtx = document.getElementById('waitersChart').getContext('2d');
+    new Chart(waiterCtx, {
+        type: 'bar',
+        data: {
+            labels: waiterLabels,
+            datasets: [
+                {
+                    label: 'Количество заказов',
+                    data: waiterOrders,
+                    backgroundColor: 'rgba(63, 55, 201, 0.7)',
+                    borderColor: 'rgba(63, 55, 201, 1)',
+                    borderWidth: 1
+                },
+                {
+                    label: 'Сумма заказов (₽)',
+                    data: waiterRevenue,
+                    backgroundColor: 'rgba(247, 37, 133, 0.7)',
+                    borderColor: 'rgba(247, 37, 133, 1)',
+                    borderWidth: 1
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'top',
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            let label = context.dataset.label || '';
+                            if (label) {
+                                label += ': ';
+                            }
+                            if (context.dataset.label === 'Сумма заказов (₽)') {
+                                label += context.raw.toFixed(2) + ' ₽';
+                            } else {
+                                label += context.raw;
+                            }
+                            return label;
+                        }
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Количество заказов'
+                    }
+                },
+                y1: {
+                    position: 'right',
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Сумма (₽)'
+                    },
+                    grid: {
+                        drawOnChartArea: false
+                    }
+                }
+            }
+        }
+    });
+</script>
             <div class="card">
                 <h3>График заказов</h3>
                 <div class="chart-container">

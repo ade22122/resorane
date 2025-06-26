@@ -4,302 +4,139 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Создать заказ | Ресторанная система</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        :root {
-            --primary: #4361ee;
-            --secondary: #3f37c9;
-            --success: #4cc9f0;
-            --danger: #f72585;
-            --warning: #f8961e;
-            --light: #f8f9fa;
-            --dark: #212529;
-            --white: #ffffff;
-        }
-        
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        
-        body {
-            background-color: #f5f7fa;
-            color: var(--dark);
-            line-height: 1.6;
-        }
-        
-        .container {
-            max-width: 900px;
-            margin: 2rem auto;
-            padding: 0 1rem;
-        }
-        
-        header {
-            text-align: center;
-            margin-bottom: 2rem;
-        }
-        
-        h1 {
-            color: var(--primary);
-            font-size: 2.2rem;
-            margin-bottom: 0.5rem;
-        }
-        
-        h2 {
-            color: var(--secondary);
-            font-size: 1.5rem;
-            margin: 1.5rem 0;
-            padding-bottom: 0.5rem;
-            border-bottom: 2px solid var(--primary);
-        }
-        
-        .card {
-            background: var(--white);
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
-            padding: 2rem;
-            margin-bottom: 2rem;
-        }
-        
-        .form-group {
-            margin-bottom: 1.5rem;
-        }
-        
-        label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: 600;
-            color: var(--dark);
-        }
-        
-        select, input {
-            width: 100%;
-            padding: 0.8rem 1rem;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            font-size: 1rem;
-            transition: all 0.3s ease;
-        }
-        
-        select:focus, input:focus {
-            border-color: var(--primary);
-            outline: none;
-            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
-        }
-        
         .dish-card {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 1rem;
-            margin-bottom: 1rem;
-            background: var(--light);
-            border-radius: 8px;
-            transition: transform 0.2s;
+            transition: all 0.2s;
+            margin-bottom: 10px;
         }
-        
         .dish-card:hover {
-            transform: translateY(-3px);
+            transform: translateY(-2px);
             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
         }
-        
-        .dish-info {
-            flex: 1;
-        }
-        
-        .dish-name {
-            font-weight: 600;
-            color: var(--dark);
-            margin-bottom: 0.3rem;
-        }
-        
-        .dish-price {
-            color: var(--secondary);
-            font-weight: 500;
-        }
-        
-        .dish-quantity {
-            width: 80px;
+        .quantity-input {
+            width: 70px;
             text-align: center;
         }
-        
-        .buttons-container {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 2rem;
-            gap: 1rem;
+        .available-quantity {
+            font-size: 0.9rem;
+            color: #6c757d;
         }
-        
-        .btn {
-            padding: 0.8rem 1.5rem;
-            border: none;
-            border-radius: 8px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
+        .out-of-stock {
+            opacity: 0.6;
+            background-color: #f8d7da;
         }
-        
-        .btn-primary {
-            background: var(--primary);
-            color: var(--white);
-            flex: 1;
-        }
-        
-        .btn-primary:hover {
-            background: var(--secondary);
-            transform: translateY(-2px);
-        }
-        
-        .btn-secondary {
-            background: var(--warning);
-            color: var(--white);
-        }
-        
-        .btn-secondary:hover {
-            background: #e07d0e;
-            transform: translateY(-2px);
-        }
-        
-        .search-box {
-            margin-bottom: 1.5rem;
-        }
-        
-        .search-input {
-            padding-left: 2.5rem;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%236c757d' viewBox='0 0 16 16'%3E%3Cpath d='M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z'/%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-position: 1rem center;
-            background-size: 1rem;
-        }
-        
-        @media (max-width: 768px) {
-            .dish-card {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-            
-            .dish-quantity {
-                width: 100%;
-                margin-top: 0.5rem;
-            }
-            
-            .buttons-container {
-                flex-direction: column;
-            }
+        .low-stock {
+            background-color: #fff3cd;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1><i class="fas fa-utensils"></i> Создание нового заказа</h1>
-        </header>
+    <div class="container py-4">
+        <h1 class="mb-4">Создание нового заказа</h1>
         
-        <div class="card">
-            <form method="post" action="/waiter">
-                <div class="form-group">
-                    <label for="user_id"><i class="fas fa-user"></i> Клиент:</label>
-                    <select id="user_id" name="user_id" required>
+        {% if error %}
+        <div class="alert alert-danger mb-4">
+            <h4 class="alert-heading">Ошибка!</h4>
+            <p>{{ error }}</p>
+            
+            {% if unavailable_dishes %}
+            <ul class="mt-2">
+                {% for dish in unavailable_dishes %}
+                <li>
+                    <strong>{{ dish.name }}</strong> - 
+                    заказано: {{ dish.ordered }}, доступно: {{ dish.available }}, 
+                    цена: {{ dish.price }} ₽
+                </li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+        </div>
+        {% endif %}
+
+        <form method="post" class="card p-4 mb-4">
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <label for="user_id" class="form-label">Клиент</label>
+                    <select class="form-select" id="user_id" name="user_id" required>
                         {% for client in clients %}
-                            <option value="{{ client[0] }}">{{ client[1] }}</option>
+                        <option value="{{ client[0] }}" 
+                            {% if form_data and form_data.get('user_id') == client[0]|string %}selected{% endif %}>
+                            {{ client[1] }}
+                        </option>
                         {% endfor %}
                     </select>
                 </div>
-
-                <div class="form-group">
-                    <label for="table_id"><i class="fas fa-chair"></i> Столик:</label>
-                    <select id="table_id" name="table_id" required>
+                <div class="col-md-6">
+                    <label for="table_id" class="form-label">Столик</label>
+                    <select class="form-select" id="table_id" name="table_id" required>
                         {% for table in tables %}
-                            <option value="{{ table[0] }}">Стол №{{ table[1] }} ({{ table[2] }} мест)</option>
+                        <option value="{{ table[0] }}" 
+                            {% if form_data and form_data.get('table_id') == table[0]|string %}selected{% endif %}>
+                            Стол №{{ table[1] }} ({{ table[2] }} мест)
+                        </option>
                         {% endfor %}
                     </select>
                 </div>
+            </div>
 
-                <h2><i class="fas fa-utensils"></i> Выберите блюда</h2>
-                
-                <div class="search-box">
-                    <input type="text" class="search-input" placeholder="Поиск блюд..." id="dishSearch">
-                </div>
-                
-                <div id="dishesContainer">
-                    {% for dish in dishes %}
-                        <div class="dish-card" data-dish-name="{{ dish[1]|lower }}">
-                            <div class="dish-info">
-                                <div class="dish-name">{{ dish[1] }}</div>
-                                <div class="dish-price">{{ dish[3] }} ₽</div>
+            <h2 class="h4 mb-3">Выберите блюда</h2>
+            
+            <div class="mb-3">
+                <input type="text" class="form-control" placeholder="Поиск блюд..." id="searchDish">
+            </div>
+            
+            <div class="row" id="dishesContainer">
+                {% for dish in dishes %}
+                <div class="col-md-6 mb-3 dish-item" data-name="{{ dish[1]|lower }}">
+                    <div class="card dish-card {% if dish[3] == 0 %}out-of-stock{% elif dish[3] < 3 %}low-stock{% endif %}">
+                        <div class="card-body d-flex justify-content-between align-items-center">
+                            <div>
+                                <h5 class="card-title mb-1">{{ dish[1] }}</h5>
+                                <p class="card-text mb-1">{{ dish[2] }} ₽</p>
+                                <small class="available-quantity">
+                                    Доступно: {{ dish[3] }}{% if dish[4] > 0 %}/{{ dish[4] }}{% endif %}
+                                </small>
                             </div>
                             <input type="number" 
                                    name="dish_{{ dish[0] }}" 
-                                   class="dish-quantity" 
+                                   class="form-control quantity-input" 
                                    min="0" 
-                                   placeholder="0"
-                                   data-price="{{ dish[3] }}">
+                                   max="{{ dish[3] }}"
+                                   value="{% if form_data %}{{ form_data.get('dish_' ~ dish[0], '0') }}{% else %}0{% endif %}"
+                                   {% if dish[3] == 0 %}disabled{% endif %}>
                         </div>
-                    {% endfor %}
+                    </div>
                 </div>
-                
-                <div class="form-group" style="text-align: right; font-size: 1.2rem; font-weight: 600;">
-                    Итого: <span id="totalAmount">0</span> ₽
-                </div>
-
-                <div class="buttons-container">
-                    <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-check-circle"></i> Подтвердить заказ
-                    </button>
-                    <a href="/waiter/orders" class="btn btn-secondary">
-                        <i class="fas fa-list"></i> Список заказов
-                    </a>
-                </div>
-            </form>
-        </div>
+                {% endfor %}
+            </div>
+            
+            <div class="d-flex justify-content-between align-items-center mt-4">
+                <a href="/waiter/orders" class="btn btn-secondary">
+                    К списку заказов
+                </a>
+                <button type="submit" class="btn btn-primary">
+                    Создать заказ
+                </button>
+            </div>
+        </form>
     </div>
 
     <script>
-        // Поиск блюд
-        document.getElementById('dishSearch').addEventListener('input', function(e) {
+        // Простой поиск по блюдам
+        document.getElementById('searchDish').addEventListener('input', function(e) {
             const searchTerm = e.target.value.toLowerCase();
-            const dishes = document.querySelectorAll('.dish-card');
+            const dishes = document.querySelectorAll('.dish-item');
             
             dishes.forEach(dish => {
-                const dishName = dish.getAttribute('data-dish-name');
+                const dishName = dish.getAttribute('data-name');
                 if (dishName.includes(searchTerm)) {
-                    dish.style.display = 'flex';
+                    dish.style.display = 'block';
                 } else {
                     dish.style.display = 'none';
                 }
             });
         });
-        
-        // Расчет общей суммы
-        const quantityInputs = document.querySelectorAll('.dish-quantity');
-        const totalAmountElement = document.getElementById('totalAmount');
-        
-        function calculateTotal() {
-            let total = 0;
-            
-            quantityInputs.forEach(input => {
-                const quantity = parseInt(input.value) || 0;
-                const price = parseFloat(input.getAttribute('data-price'));
-                total += quantity * price;
-            });
-            
-            totalAmountElement.textContent = total.toFixed(2);
-        }
-        
-        quantityInputs.forEach(input => {
-            input.addEventListener('change', calculateTotal);
-            input.addEventListener('input', calculateTotal);
-        });
-        
-        // Инициализация расчета
-        calculateTotal();
     </script>
 </body>
 </html>

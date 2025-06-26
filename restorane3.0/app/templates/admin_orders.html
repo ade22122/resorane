@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Статистика заказов</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --secondary: #3f37c9;
+            --danger: #f72585;
+            --success: #4cc9f0;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --gray: #6c757d;
+            --white: #ffffff;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f0f2f5;
+            color: var(--dark);
+            line-height: 1.6;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background: var(--primary);
+            color: var(--white);
+            padding: 20px 0;
+            margin-bottom: 30px;
+        }
+        
+        h1, h2, h3 {
+            margin-bottom: 20px;
+        }
+        
+        h1 {
+            font-size: 2rem;
+            text-align: center;
+        }
+        
+        .card {
+            background: var(--white);
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .filters {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .filter-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+        
+        select, input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        
+        button {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        button:hover {
+            background: var(--secondary);
+        }
+        
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .table th, .table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .table th {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .table tr:nth-child(even) {
+            background: rgba(0,0,0,0.02);
+        }
+        
+        .table tr:hover {
+            background: rgba(67, 97, 238, 0.05);
+        }
+        
+        .status {
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .status-completed {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .status-cancelled {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .action-link {
+            color: var(--primary);
+            text-decoration: none;
+        }
+        
+        .action-link:hover {
+            text-decoration: underline;
+        }
+        
+        .summary {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+        
+        .summary-item {
+            text-align: center;
+        }
+        
+        .summary-value {
+            font-size: 1.5rem;
+            font-weight: 500;
+            color: var(--primary);
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1><i class="fas fa-chart-pie"></i> Статистика заказов</h1>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="card">
+            <h2>Фильтры</h2>
+            <form method="get" class="filters">
+                <div class="filter-group">
+                    <label for="start">Дата от</label>
+                    <input type="date" id="start" name="start" value="{{ filters.start }}">
+                </div>
+                
+                <div class="filter-group">
+                    <label for="end">Дата до</label>
+                    <input type="date" id="end" name="end" value="{{ filters.end }}">
+                </div>
+                
+                <div class="filter-group">
+                    <label for="waiter_id">Официант</label>
+                    <select id="waiter_id" name="waiter_id">
+                        <option value="">Все</option>
+                        {% for waiter in waiters %}
+                        <option value="{{ waiter.id }}" 
+                            {% if filters.waiter_id == waiter.id|string %}selected{% endif %}>
+                            {{ waiter.name }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label for="status">Статус</label>
+                    <select id="status" name="status">
+                        <option value="">Все</option>
+                        {% for status in statuses %}
+                        <option value="{{ status }}" 
+                            {% if filters.status == status %}selected{% endif %}>
+                            {{ status }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div class="filter-group" style="align-self: flex-end;">
+                    <button type="submit">
+                        <i class="fas fa-filter"></i> Применить
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <div class="card">
+            <h2>Список заказов</h2>
+            <div style="overflow-x: auto;">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Дата</th>
+                            <th>Клиент</th>
+                            <th>Официант</th>
+                            <th>Стол</th>
+                            <th>Статус</th>
+                            <th>Сумма</th>
+                            <th>Действия</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for order in orders %}
+                        <tr>
+                            <td>{{ order.id }}</td>
+                            <td>{{ order.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                            <td>{{ order.client_name }}</td>
+                            <td>{{ order.waiter_name }}</td>
+                            <td>№{{ order.table_number }}</td>
+                            <td>
+                                <span class="status status-{{ order.status }}">
+                                    {{ order.status }}
+                                </span>
+                            </td>
+                            <td>{{ "%.2f"|format(order.total_price) }} ₽</td>
+                            <td>
+                                <a href="/admin/order/{{ order.id }}" class="action-link">
+                                    <i class="fas fa-eye"></i> Подробнее
+                                </a>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="8" style="text-align: center;">Нет заказов по выбранным фильтрам</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="summary">
+                <div class="summary-item">
+                    <div class="summary-value">{{ orders|length }}</div>
+                    <div>Всего заказов</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-value">
+                        {{ "%.2f"|format(orders|sum(attribute='total_price')) }} ₽
+                    </div>
+                    <div>Общая сумма</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-value">
+                        {% if orders|length > 0 %}
+                            {{ "%.2f"|format(orders|sum(attribute='total_price') / orders|length) }} ₽
+                        {% else %}
+                            0 ₽
+                        {% endif %}
+                    </div>
+                    <div>Средний чек</div>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

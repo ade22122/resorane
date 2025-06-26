@@ -27,12 +27,20 @@ def waiter_form(request: Request):
         cur.execute("SELECT id, username FROM users WHERE role = 'guest'")
         clients = cur.fetchall()
 
-        # Получаем список столов
-        cur.execute("SELECT id, table_number FROM restaurant_tables")
+        # Получаем список столов с количеством мест
+        cur.execute("SELECT id, table_number, seats FROM restaurant_tables")
         tables = cur.fetchall()
 
-        # Получаем список блюд
-        cur.execute("SELECT id, name FROM menu_items WHERE is_available = true")
+        # Получаем список доступных блюд с текущим количеством
+        cur.execute("""
+            SELECT m.id, m.name, m.price, 
+                   COALESCE(di.current_quantity, 0) as current_quantity,
+                   COALESCE(di.max_quantity, 0) as max_quantity
+            FROM menu_items m
+            LEFT JOIN dish_inventory di ON m.id = di.menu_item_id
+            WHERE m.is_available = true
+            ORDER BY m.name
+        """)
         dishes = cur.fetchall()
 
     return templates.TemplateResponse("waiter_form.html", {
@@ -58,41 +66,110 @@ async def submit_order(
     if not dish_quantities:
         return templates.TemplateResponse("waiter_form.html", {
             "request": request,
-            "error": "Не выбрано ни одного блюда!"
+            "error": "Не выбрано ни одного блюда!",
+            "clients": [],  # Нужно будет добавить повторные запросы
+            "tables": [],
+            "dishes": []
         })
 
     with get_connection() as conn:
         cur = conn.cursor()
 
-        # Получаем цену каждого блюда
+        # Проверяем доступность блюд
+        unavailable_dishes = []
+        for dish_id, qty in dish_quantities.items():
+            cur.execute("""
+                SELECT di.current_quantity, m.name, m.price
+                FROM dish_inventory di
+                JOIN menu_items m ON di.menu_item_id = m.id
+                WHERE di.menu_item_id = %s
+            """, (dish_id,))
+            result = cur.fetchone()
+            
+            if not result or result[0] < qty:
+                dish_name = result[1] if result else f"ID {dish_id}"
+                available = result[0] if result else 0
+                price = result[2] if result else 0
+                unavailable_dishes.append({
+                    "name": dish_name,
+                    "ordered": qty,
+                    "available": available,
+                    "price": price
+                })
+
+        if unavailable_dishes:
+            # Получаем данные для повторного отображения формы
+            cur.execute("SELECT id, username FROM users WHERE role = 'guest'")
+            clients = cur.fetchall()
+            cur.execute("SELECT id, table_number, seats FROM restaurant_tables")
+            tables = cur.fetchall()
+            cur.execute("""
+                SELECT m.id, m.name, m.price, 
+                       COALESCE(di.current_quantity, 0) as current_quantity,
+                       COALESCE(di.max_quantity, 0) as max_quantity
+                FROM menu_items m
+                LEFT JOIN dish_inventory di ON m.id = di.menu_item_id
+                WHERE m.is_available = true
+                ORDER BY m.name
+            """)
+            dishes = cur.fetchall()
+            
+            error_msg = "Недостаточно порций для следующих блюд:"
+            return templates.TemplateResponse("waiter_form.html", {
+                "request": request,
+                "error": error_msg,
+                "unavailable_dishes": unavailable_dishes,
+                "clients": clients,
+                "tables": tables,
+                "dishes": dishes,
+                "form_data": dict(form_data)  # Сохраняем введенные данные
+            })
+
+        # Рассчитываем общую стоимость
         total_price = 0
         for dish_id, qty in dish_quantities.items():
             cur.execute("SELECT price FROM menu_items WHERE id = %s", (dish_id,))
-            result = cur.fetchone()
-            if result:
-                price = result[0]
-                total_price += price * qty
+            price = cur.fetchone()[0]
+            total_price += price * qty
 
-        # Вставляем заказ
-        waiter_id = 1  # заменить на реального официанта
-        cur.execute("""
-            INSERT INTO orders (user_id, waiter_id, table_id, status, created_at, total_price)
-            VALUES (%s, %s, %s, %s, %s, %s)
-            RETURNING id
-        """, (user_id, waiter_id, table_id, 'невыполнен', datetime.now(), total_price))
-        order_id = cur.fetchone()[0]
-
-        # Вставка позиций заказа
-        for dish_id, quantity in dish_quantities.items():
+        # Создаем заказ
+        waiter_id = request.session.get("user_id")
+        try:
             cur.execute("""
-                INSERT INTO order_items (order_id, menu_item_id, quantity)
-                VALUES (%s, %s, %s)
-            """, (order_id, dish_id, quantity))
+                INSERT INTO orders (user_id, waiter_id, table_id, status, created_at, total_price)
+                VALUES (%s, %s, %s, %s, %s, %s)
+                RETURNING id
+            """, (user_id, waiter_id, table_id, 'принят', datetime.now(), total_price))
+            order_id = cur.fetchone()[0]
 
-        conn.commit()
+            # Добавляем позиции заказа и обновляем инвентарь
+            for dish_id, quantity in dish_quantities.items():
+                cur.execute("""
+                    INSERT INTO order_items (order_id, menu_item_id, quantity)
+                    VALUES (%s, %s, %s)
+                """, (order_id, dish_id, quantity))
+                
+                cur.execute("""
+                    UPDATE dish_inventory
+                    SET current_quantity = current_quantity - %s
+                    WHERE menu_item_id = %s
+                """, (quantity, dish_id))
 
-    return RedirectResponse("/waiter", status_code=303)
-
+            conn.commit()
+            
+            # Перенаправляем на страницу заказов с сообщением об успехе
+            request.session["order_success"] = f"Заказ #{order_id} успешно создан!"
+            return RedirectResponse("/waiter/orders", status_code=303)
+            
+        except Exception as e:
+            conn.rollback()
+            return templates.TemplateResponse("waiter_form.html", {
+                "request": request,
+                "error": f"Ошибка при создании заказа: {str(e)}",
+                "clients": [],  # Нужно будет добавить повторные запросы
+                "tables": [],
+                "dishes": []
+            })
 
 
 # Создание нового заказа

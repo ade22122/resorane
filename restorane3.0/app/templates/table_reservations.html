@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Статистика бронирования по столикам</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        .stats-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        .stats-table th, .stats-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+        .stats-table th {
+            background-color: #f2f2f2;
+            position: sticky;
+            top: 0;
+        }
+        .stats-table tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        .reservation-count {
+            background-color: #4CAF50;
+            color: white;
+            border-radius: 50%;
+            display: inline-block;
+            width: 25px;
+            height: 25px;
+            line-height: 25px;
+            text-align: center;
+        }
+        .table-container {
+            max-height: 80vh;
+            overflow-y: auto;
+            margin-bottom: 30px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Статистика бронирования столиков</h1>
+    
+    <div class="table-container">
+        <table class="stats-table">
+            <thead>
+                <tr>
+                    <th>Стол\Время</th>
+                    {% for time in time_slots %}
+                    <th>{{ time }}</th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for table in tables %}
+                <tr>
+                    <td><strong>Стол №{{ table.number }}</strong></td>
+                    {% for time in time_slots %}
+                    <td>
+                        {% if stats[table.number] %}
+                            {% for date, times in stats[table.number].items() %}
+                                {% if time in times %}
+                                <div class="reservation-count" title="{{ date }}: {{ times[time] }} бронирований">
+                                    {{ times[time] }}
+                                </div>
+                                {% endif %}
+                            {% endfor %}
+                        {% endif %}
+                    </td>
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

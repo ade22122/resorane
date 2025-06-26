@@ -23,7 +23,7 @@ async def make_reservation(
     reservation_time: str = Form(...),
     duration: int = Form(...)
 ):
-    user_id = request.cookies.get("user_id")
+    user_id = request.session.get("user_id")
     if not user_id:
         return RedirectResponse("/login", status_code=303)
 
